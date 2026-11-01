@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الحسابات</title>
+<style>
+  :root{
+    --paper:#FBF8F2; --ink:#241C15; --stamp:#9B3B27;
+    --gold:#B98A3B; --line:#D8CDB8; --soft:#F1E9D8;
+    --green:#2e7d32; --red:#b3261e; --amber:#9a6a00;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:'Tahoma','Segoe UI',sans-serif; line-height:1.7;
+    padding:20px 16px 80px;
+  }
+  .wrap{max-width:640px; margin:0 auto;}
+  header{text-align:center; padding:16px 10px 14px;
+    border-bottom:3px double var(--gold); margin-bottom:20px;}
+  header .badge{display:inline-block; border:2px solid var(--stamp);
+    color:var(--stamp); border-radius:50%; width:54px; height:54px;
+    line-height:50px; font-size:22px; margin-bottom:8px; font-weight:bold;
+    transform:rotate(-6deg);}
+  header h1{font-size:1.35rem;}
+  .card{background:#fff; border:1px solid var(--line); border-radius:12px;
+    padding:16px; box-shadow:0 2px 10px rgba(60,40,20,.06); margin-bottom:16px;}
+  label{display:block; font-size:.8rem; font-weight:bold; margin:10px 0 4px;}
+  input,select{
+    width:100%; padding:10px 12px; border:1px solid var(--line);
+    border-radius:8px; font-size:.95rem; font-family:inherit;
+    background:var(--paper); color:var(--ink);
+  }
+  input:focus,select:focus{outline:2px solid var(--gold);}
+  .row{display:flex; gap:10px;}
+  .row>div{flex:1;}
+  button{
+    width:100%; margin-top:16px; padding:13px; border:0; border-radius:10px;
+    background:var(--stamp); color:#fff; font-size:1rem; font-weight:bold;
+    font-family:inherit; cursor:pointer;
+  }
+  button:hover{background:#7d3120;}
+  button:disabled{opacity:.6; cursor:default;}
+  .btn2{width:auto; padding:10px 22px; margin:0;}
+  #msg{margin-top:12px; padding:10px; border-radius:8px; text-align:center;
+    display:none; font-weight:bold;}
+  #msg.ok{display:block; background:#e6f4ea; color:var(--green); border:1px solid #b7e0bf;}
+  #msg.err{display:block; background:#fdecea; color:var(--red); border:1px solid #f3c2bd;}
+  .req{color:var(--stamp);}
+  .hint{font-size:.72rem; color:#8a7a64; margin-top:2px;}
+  #addform{display:none;}
+  table{width:100%; border-collapse:collapse; font-size:.78rem;}
+  th{padding:8px 5px; text-align:right; border-bottom:2px solid var(--line);
+    color:var(--stamp); font-size:.75rem;}
+  td{padding:7px 5px; border-bottom:1px solid var(--soft); vertical-align:middle;}
+  .em{direction:ltr; text-align:right; font-size:.72rem; word-break:break-all;}
+  .bdg{padding:2px 8px; border-radius:10px; font-size:.7rem; font-weight:bold;
+    display:inline-block; white-space:nowrap;}
+  .b-g{background:#e6f4ea; color:var(--green);}
+  .b-r{background:#fdecea; color:var(--red);}
+  .b-a{background:#fdf3e0; color:var(--amber);}
+  .owner{font-size:.72rem; color:#6b5d4a;}
+  .del{background:none;border:0;color:var(--red);font-size:1rem;cursor:pointer;padding:2px 6px;width:auto;margin:0}
+  .top{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+  .top h2{font-size:1rem;}
+  #count{font-size:.75rem; color:#8a7a64;}
+  .ref{background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;
+    width:auto;font-size:.75rem;color:var(--ink);margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="badge">✓</div>
+  <h1>تسجيل الحسابات</h1>
+</header>
+
+<div class="card">
+  <div class="top">
+    <h2>الحسابات <span id="count"></span></h2>
+    <div>
+      <button class="ref" onclick="loadAll()">↻</button>
+      <button class="btn2" id="addbtn" onclick="toggleForm()">+ إضافة حساب</button>
+    </div>
+  </div>
+
+  <div id="addform">
+    <label>الإيميل <span class="req">*</span></label>
+    <input id="email" type="email" required placeholder="email@outlook.com" dir="ltr">
+    <label>الباسورد <span class="req">*</span></label>
+    <input id="pw" type="text" required dir="ltr" autocomplete="off">
+    <div class="row">
+      <div>
+        <label>المكتب <span class="req">*</span></label>
+        <select id="office">
+          <option value="1">القاهرة</option>
+          <option value="2">إسكندرية</option>
+        </select>
+      </div>
+      <div>
+        <label>نوع الفيزا <span class="req">*</span></label>
+        <select id="visa">
+          <option value="1">Tourism (C)</option>
+          <option value="4">Re-entry (D)</option>
+          <option value="5">Business (C)</option>
+          <option value="8">Study (D)</option>
+          <option value="9">Study (C)</option>
+          <option value="10">Sport (C)</option>
+          <option value="19">Family Reunion</option>
+          <option value="31">Employment 2025</option>
+          <option value="32">Employment 2026</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>نوع الخدمة</label>
+        <select id="service">
+          <option value="1">Standard (1875)</option>
+          <option value="2">Express (4082)</option>
+        </select>
+      </div>
+      <div>
+        <label>رقم البروتوكول (لو موجود)</label>
+        <input id="proto" placeholder="P-CR/..." dir="ltr">
+      </div>
+    </div>
+    <label>صاحب الحساب (رقم تليفون أو اسم)</label>
+    <input id="owner" placeholder="01xxxxxxxxx أو الاسم">
+    <div class="hint">لو الرقم مش موجود اكتب اسم صاحب الشغل</div>
+    <button id="savebtn" onclick="save()">حفظ الحساب</button>
+    <div id="msg"></div>
+  </div>
+
+  <div id="tbl">جاري التحميل…</div>
+</div>
+</div>
+<script>
+const SB='https://vegdhscawhutjlzitlqs.supabase.co';
+const KEY='sb_publishable_yLNSwpy2A6jXZ1rIA-szwA_LBZMJ2NQ';
+const H={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json'};
+const VN={'1':'Tourism (C)','4':'Re-entry (D)','5':'Business (C)','8':'Study (D)','9':'Study (C)','10':'Sport (C)','19':'Family Reunion','31':'Employment 2025','32':'Employment 2026'};
+const ON={'1':'القاهرة','2':'إسكندرية'};
+const SN={'1':'Standard','2':'Express'};
+
+function toggleForm(){
+  const f=document.getElementById('addform');
+  f.style.display=f.style.display==='none'||!f.style.display?'block':'none';
+}
+
+async function loadAll(){
+  const tbl=document.getElementById('tbl');tbl.textContent='جاري التحميل…';
+  try{
+    const [ra,rk]=await Promise.all([
+      fetch(SB+'/rest/v1/accounts?select=*&order=updated_at.desc',{headers:H}),
+      fetch(SB+'/rest/v1/device_keys?select=email,device_id',{headers:H})]);
+    const accs=await ra.json();
+    const keys=await rk.json();
+    const bound=new Set((keys||[]).map(k=>k.email));
+    document.getElementById('count').textContent='('+(accs||[]).length+')';
+    if(!accs||!accs.length){tbl.innerHTML='<p style="text-align:center;color:#8a7a64;padding:14px">مفيش حسابات لسه — دوس "إضافة حساب"</p>';return}
+    let h='<table><tr><th>الحساب</th><th>صاحب الشغل</th><th>فيزا</th><th>مكتب</th><th>سيرفس</th><th>الربط</th><th></th></tr>';
+    for(const a of accs){
+      const b=bound.has(a.email);
+      h+='<tr><td class="em">'+a.email+'</td>'
+       +'<td class="owner">'+(a.owner||'—')+'</td>'
+       +'<td>'+(VN[a.visa_id]||a.visa_id||'—')+'</td>'
+       +'<td>'+(ON[a.office_id]||a.office_id||'—')+'</td>'
+       +'<td>'+(SN[a.service_id]||a.service_id||'—')+'</td>'
+       +'<td>'+(b?'<span class="bdg b-g">مربوط ✓</span>':'<span class="bdg b-a">غير مربوط</span>')+'</td>'
+       +'<td><button class="del" onclick="delAcc(\''+a.email.replace(/'/g,"\\'")+'\')" title="حذف">✕</button></td></tr>';
+    }
+    tbl.innerHTML=h+'</table>';
+  }catch(e){
+    tbl.innerHTML='<p style="text-align:center;color:#b3261e;padding:12px">خطأ في التحميل — تأكد من النت</p>';
+  }
+}
+
+async function save(){
+  const em=document.getElementById('email').value.trim();
+  const pw=document.getElementById('pw').value;
+  const msg=document.getElementById('msg');msg.className='';msg.style.display='none';
+  if(!em||!pw){msg.className='err';msg.textContent='اكتب الإيميل والباسورد';return}
+  const btn=document.getElementById('savebtn');btn.disabled=true;btn.textContent='جاري الحفظ...';
+  const row={
+    email:em,password:pw,
+    owner:document.getElementById('owner').value.trim(),
+    office_id:document.getElementById('office').value,
+    visa_id:document.getElementById('visa').value,
+    service_id:document.getElementById('service').value,
+    protocol:document.getElementById('proto').value.trim(),
+    registered:true,enabled:true,updated_at:Date.now()
+  };
+  try{
+    const r=await fetch(SB+'/rest/v1/accounts',{method:'POST',
+      headers:{...H,'Prefer':'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify(row)});
+    if(r.status===201||r.status===204||r.status===200){
+      msg.className='ok';msg.textContent='✓ اتسجل بنجاح';
+      ['email','pw','owner','proto'].forEach(i=>document.getElementById(i).value='');
+      loadAll();
+    }else{
+      msg.className='err';msg.textContent='خطأ '+r.status+' — جرب تاني';
+    }
+  }catch(e){
+    msg.className='err';msg.textContent='مفيش نت — جرب تاني';
+  }
+  btn.disabled=false;btn.textContent='حفظ الحساب';
+}
+
+async function delAcc(em){
+  if(!confirm('حذف '+em+'؟'))return;
+  await fetch(SB+'/rest/v1/accounts?email=eq.'+encodeURIComponent(em),
+    {method:'DELETE',headers:H});
+  loadAll();
+}
+loadAll();setInterval(loadAll,15000);
+</script>
+</body>
+</html>
